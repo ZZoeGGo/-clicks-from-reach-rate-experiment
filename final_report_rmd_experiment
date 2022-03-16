@@ -1,0 +1,84 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Describution
+
+In my club experience, I was graphing for the posters to draw attention, in order to recieve “click” from readers on social media, and I was wondering which factors will effect the public attraction. In this study, I drew a character with three different factors, aiming to detect the factors which will influence the “clicks from reach” rate(number of clicks divided by number of reach) using an $2^3$ factorial design. I times 100 on the “clicks from reach” rate as the successful score of attraction on each graph. The experiment showed wether the score will be influenced by coloring, full body(vs headshot) and background to the same cartoon character. Each factor has two levels:
+
+```{r, echo=FALSE}
+s <- matrix(c("no color(-1)","with color(1)","headshot(-1)","fullbody(1)","no background(-1)","with background(1)"),ncol=2,byrow=TRUE)
+colnames(s) <- c("Level1","Level2")
+rownames(s) <- c("color","headshot or full body","background")
+s <- as.table(s)
+s
+```
+The factorial design is $2^3$, and a replicated design is carried out, in the end we have 16 observations in total.The $H{0}$ and $H{A}$ for the experiment are: 
+
+$H{0}$: all the factors take no effect on the successful score.
+
+$H{A}$: exist some factors(or one factor) effect the successful score.
+
+In the experiment, I firstly published all 8 graphs on my face book. Since the post order should be randomized, I gave numbers (1~8) to each graph, wrote them down on 8 papers with the same size and color, then blindly drew from them for ordering. After that, I published these graphs at the same time to minimize the difference in the number of views, hopefully the person from my social media who were “unaware” to attend into the experiment would view all of the graphs before clicking the ones most attractive to them. I did the same progress on my WeChat and carried out the data below:
+
+```{r, echo=FALSE}
+library(readxl)
+table_1 <- read_excel("table 1.xlsx", col_types = c("skip", 
+                                                    "numeric", "numeric",
+                                                    "numeric", "numeric"))
+table_1            
+```
+
+#  Analysis of data
+
+We use the simple regression model for data modeling, following the function:
+
+score ~ color * horf * backg
+
+where the variable score is dependent, and variables color, horf and backg are independent variables.
+
+To reach a direct vision of the main effect of the independent variables, we use a cube plot:
+
+```{r, echo=FALSE}
+a <- lm(score ~ color*horf*backg, data = table_1)
+library("FrF2")
+cubePlot(a, "color", "horf", "backg", main = "cube plot of score by color, horf and backgound")
+```
+
+
+## Interpretation of effects and the effects of interactions
+
+The main effects of each factors and their interactions are indicated in the table below:
+
+```{r, echo=FALSE}
+a <- lm(score ~ color*horf*backg, data = table_1)
+
+knitr::kable(summary(a)$coef, digits = 3, cap = "Effect of factors to score")
+
+```
+
+Estimated variance:
+$(1.322 * 2)^2$ = 6.9907, all main effects and effects of interactions have the same estimated variance.
+
+Estimated variance of effect:
+0.25 * 1.322 * 2 = 0.661
+
+From the table, we see the successful score of graphs increase by 5.844 with color, which significantly reject $H{0}$ with evidence that color takes effect on the score since the p-value 0.02 < 0.05. However, for the other two factors full body(vs headshot) and background, although they show positive effect on the score (1.594 and 2.594 respectively), their p-value are larger than 0.05, which means they failed to reject $H{0}$ as no significant effect these two factors show on the successful score. At the same time, the p-values of the factors` interactions are all greater than 0.05, so they failed to reject $H{0}$, and since no significant effects of the interactions to the score, the three factors color, body(vs headshot) and background have independent effect to the successful score.
+
+
+
+## Interpretation of 95% Confidence Interval on the effects
+
+We take 95% Confidence Interval on the true effects and effects of interactions: 
+
+```{r, echo=FALSE}
+a <- lm(score ~ color*horf*backg, data = table_1)
+2*confint.lm(a)
+```
+
+Where we see that only effect of color does not include 0 in its 95% Confidence Interval(5.5914956, 17.783504), the other factors and interactions all have 0 in their 95% CI. Only color shows evidence on effecting the successful score, while all three factors have independent effect to the successful score.
+
+# Conclutions
+
+In this report, I carried out a replicated $2^3$ factorial design to estimate the effect of color, body part(full body vs headshot) and background to the attraction of graphs, represented by higher "click for view" score achieved on social media. Only color shows significant effect on the the successful score, as the score increase by 5.844 for the colored graphs, which reject $H{0}$ with evidence since the p-value 0.02 < 0.05. The other two factors full body(vs headshot) and background show positive effect on the score (1.594 and 2.594 respectively), however, their p-value are larger than 0.05, which means they failed to reject $H{0}$ as no significant effect these two factors show on the successful score. At the same time, the p-values of the factors` interactions are all greater than 0.05, so they failed to reject $H{0}$, and since no significant effects of the interactions to the score, the three factors color, body(vs headshot) and background have independent effect to the successful score. For conclusion, I realize that people prefer colorful graphs mostly, so the poster graphers should include colors into their art works to attract more attention and recieve higher clicks for the same number of viewers, to read the content.
